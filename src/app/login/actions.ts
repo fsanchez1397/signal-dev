@@ -28,6 +28,7 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const supabase = await createClient();
 
+  await supabase.auth.signOut();
   // type-casting here for convenience
   // in practice, you should validate your inputs
   const data = {
@@ -42,5 +43,15 @@ export async function signup(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  redirect("/confirm-email");
+}
+export async function signOut() {
+  const supabase = await createClient();
+  console.log("clicked");
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    redirect("/error");
+  }
+  revalidatePath("/", "layout");
+  redirect("/login");
 }
