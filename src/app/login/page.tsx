@@ -1,26 +1,35 @@
+import { Button } from "@/components/ui/button";
 import { login, signup } from "./actions";
+import { Label } from "@radix-ui/react-label";
+import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {
   return (
     <form>
-      <div className="border-red-500 border-2">
-        <label htmlFor="email">Email:</label>
+      <div>
+        <Label htmlFor="email">Email:</Label>
+        <Input
+          id="email"
+          type="email"
+          name="email"
+          placeholder="Email"
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="password">Password:</Label>
+        <Input
+          id="password"
+          type="password"
+          name="password"
+          placeholder="Password"
+          required
+        />
+      </div>
 
-        <input id="email" name="email" type="email" required />
-      </div>
-      <div className="border-red-500 border-2">
-        <label htmlFor="password">Password:</label>
-        <input id="password" name="password" type="password" required />
-      </div>
-      <button formAction={login} className="border-red-500 border-2">
-        Log in
-      </button>
-      <button
-        formAction={signup}
-        className="border-red-500 border-2 bg-amber-200"
-      >
-        Sign up
-      </button>
+      <Button formAction={login}>Log In</Button>
+
+      <Button formAction={signup}>Sign Up</Button>
     </form>
   );
 }
