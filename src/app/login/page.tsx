@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { login, signup } from "./actions";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 export default function LoginPage() {

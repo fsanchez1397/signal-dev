@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionState } from "react";
 import { onSave } from "./actions";
-export default function () {
+export default function DashboardProfile() {
   const initState = {
     success: false,
     message: "",
@@ -12,9 +12,12 @@ export default function () {
   };
   const [state, formAction, isPending] = useActionState(onSave, initState);
   return (
-    <>
-      <form action={formAction}>
-        <Label htmlFor="fullName">Full Name:</Label>
+    <form action={formAction}>
+      <div>
+        <Label htmlFor="fullName" className="text-sm font-medium">
+          Full Name:
+        </Label>
+
         <Input
           id="fullName"
           type="text"
@@ -22,11 +25,11 @@ export default function () {
           placeholder="Enter your fullname"
           required
         />
-        <Button type="submit">Save</Button>
-        {state?.message && (
-          <p className="text-sm text-red-500">{state.message}</p>
-        )}
-      </form>
-    </>
+      </div>
+      <Button type="submit">Save</Button>
+      {state?.message && (
+        <p className="text-sm text-red-500">{state.message}</p>
+      )}
+    </form>
   );
 }

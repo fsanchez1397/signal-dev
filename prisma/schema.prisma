@@ -9,10 +9,8 @@ datasource db {
     provider = "postgresql"
     url      = env("DATABASE_URL")
     directUrl = env("DIRECT_URL")
+    shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
-
-// ENUMS: Using enums prevents "magic strings" in our database.
-// This ensures data consistency for filtering and display.
 enum ChallengeCategory {
   ARRAYS_HASHING
   GRAPHS
@@ -27,26 +25,26 @@ enum InterviewStatus {
   ARCHIVED
 }
 
-// Defines the candidate's core profile, linked to their auth identity.
+// 3. Data Models
+// These are the blueprints for your database tables.
+
 model CandidateProfile {
-  id        String    @id @default(uuid())
-  // This is the critical link to the Supabase auth.users table.
-  // It ensures one profile per authenticated user.
+  id        String    @id @default(cuid())
+  // The link to the Supabase auth.users table. @unique enforces one profile per user.
   userId    String    @unique
-  fullName  String
+  fullName  String?
   githubUrl String?
-  bio       String?   @db.Text // Use Text for longer bio fields
+  bio       String?   @db.Text
   visaNeeded Boolean  @default(false)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
-  // A candidate can have multiple interviews over time.
+  // This defines the one-to-many relationship: One candidate can have many interviews.
   interviews Interview[]
 }
 
-// Represents a single coding challenge attempt by a candidate.
 model Interview {
-  id           String   @id @default(uuid())
+  id           String   @id @default(cuid())
   score        Int?
   recordingUrl String?
   status       InterviewStatus @default(COMPLETED)
@@ -54,8 +52,8 @@ model Interview {
 
   createdAt    DateTime @default(now())
 
-  // Explicit many-to-one relation back to the candidate.
-  // This is the professional way to define relations in Prisma.
+  // This defines the other side of the relationship.
+  // The candidateId field in this table points to the id field in the CandidateProfile table.
   candidate   CandidateProfile @relation(fields: [candidateId], references: [id])
   candidateId String
 }

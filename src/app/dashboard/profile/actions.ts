@@ -33,6 +33,7 @@ export const onSave = async (
   try {
     const rawFormData = Object.fromEntries(formData.entries());
     const result = profileSchema.safeParse(rawFormData);
+    console.log("first");
     if (!result.success) {
       return { success: false };
     }
@@ -45,13 +46,12 @@ export const onSave = async (
     if (!user) {
       throw new Error("User not authenticated");
     }
-    console.log(user, result);
 
     const { error } = await supabase
-      .from("CandidateProfiles")
+      .from("CandidateProfile")
       .upsert({ userId: user.id, ...result.data });
     if (error) {
-      console.error("Error upserting profile data");
+      console.error("Error upserting profile data:", error);
       return {
         success: false,
         message: "Database Error: Could not save profile.",
