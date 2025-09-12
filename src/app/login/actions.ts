@@ -53,7 +53,7 @@ export async function signup(formData: FormData) {
 }
 export async function signOut() {
   const supabase = await createClient();
-  console.log("clicked");
+  
   const { error } = await supabase.auth.signOut();
   if (error) {
     redirect("/error");

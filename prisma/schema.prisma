@@ -1,33 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-    directUrl = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
-
-// ENUMS: Using enums prevents "magic strings" in our database.
-// This ensures data consistency for filtering and display.
-enum ChallengeCategory {
-  ARRAYS_HASHING
-  GRAPHS
-  DEPTH_FIRST_SEARCH
-  DYNAMIC_PROGRAMMING
-}
-
-enum InterviewStatus {
-  SCHEDULED
-  COMPLETED
-  REVIEWED
-  ARCHIVED
-}
-
-// Defines the candidate's core profile, linked to their auth identity.
 model CandidateProfile {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String    @unique
@@ -44,18 +23,27 @@ model CandidateProfile {
   interviews Interview[]
 }
 
-// Represents a single coding challenge attempt by a candidate.
 model Interview {
-  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String            @id
   score        Int?
   recordingUrl String?
-  status       InterviewStatus @default(COMPLETED)
+  status       InterviewStatus   @default(COMPLETED)
   category     ChallengeCategory
+  createdAt    DateTime          @default(now())
+  candidateId  String
+  candidate    CandidateProfile  @relation(fields: [candidateId], references: [id])
+}
 
-  createdAt    DateTime @default(now())
+enum ChallengeCategory {
+  ARRAYS_HASHING
+  GRAPHS
+  DEPTH_FIRST_SEARCH
+  DYNAMIC_PROGRAMMING
+}
 
-  // Explicit many-to-one relation back to the candidate.
-  // This is the professional way to define relations in Prisma.
-  candidate   CandidateProfile @relation(fields: [candidateId], references: [id])
-  candidateId String
+enum InterviewStatus {
+  SCHEDULED
+  COMPLETED
+  REVIEWED
+  ARCHIVED
 }
