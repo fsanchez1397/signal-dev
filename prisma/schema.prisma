@@ -29,15 +29,15 @@ enum InterviewStatus {
 
 // Defines the candidate's core profile, linked to their auth identity.
 model CandidateProfile {
-  id        String    @id @default(uuid())
-  // This is the critical link to the Supabase auth.users table.
-  // It ensures one profile per authenticated user.
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId    String    @unique
-  fullName  String
+  email     String    @unique
+  firstName String    
+  lastName  String    
   githubUrl String?
-  bio       String?   @db.Text // Use Text for longer bio fields
-  visaNeeded Boolean  @default(false)
-  createdAt DateTime  @default(now())
+  bio       String?    @db.Text
+  visaNeeded Boolean?  @default(false)
+  createdAt DateTime
   updatedAt DateTime  @updatedAt
 
   // A candidate can have multiple interviews over time.
@@ -46,7 +46,7 @@ model CandidateProfile {
 
 // Represents a single coding challenge attempt by a candidate.
 model Interview {
-  id           String   @id @default(uuid())
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   score        Int?
   recordingUrl String?
   status       InterviewStatus @default(COMPLETED)

@@ -26,7 +26,26 @@ export default function LoginPage() {
           required
         />
       </div>
-
+      <div>
+        <Label htmlFor="firstName">First Name:</Label>
+        <Input
+          id="firstName"
+          type="text"
+          name="firstName"
+          placeholder="Enter your first name"
+          required
+        />
+      </div>
+      <div>
+        <Label htmlFor="lastName">Last Name:</Label>
+        <Input
+          id="lastName"
+          type="text"
+          name="lastName"
+          placeholder="Enter your last name"
+          required
+        />
+      </div>
       <Button formAction={login}>Log In</Button>
 
       <Button formAction={signup}>Sign Up</Button>
