@@ -1,11 +1,15 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import {prisma}
 import z from "zod";
 const profileSchema = z.object({
-  fullName: z
+  firstName: z
     .string()
-    .min(2, { message: "Full name must be at least 2 characters." }),
+    .min(2, { message: "First name must be at least 2 characters." }),
+  lastName: z
+    .string()
+    .min(2, { message: "Last name must be at least 2 characters." }),
   githubUrl: z
     .string()
     .url({ message: "Please enter a valid GitHub URL." })
@@ -33,12 +37,12 @@ export const onSave = async (
   try {
     const rawFormData = Object.fromEntries(formData.entries());
     const result = profileSchema.safeParse(rawFormData);
-    console.log("first");
+
     if (!result.success) {
       return { success: false };
     }
+
     const supabase = await createClient();
-    // const profileData = { fullName: formData.get("fullName") as string };
 
     const {
       data: { user },
@@ -47,16 +51,16 @@ export const onSave = async (
       throw new Error("User not authenticated");
     }
 
-    const { error } = await supabase
-      .from("CandidateProfile")
-      .upsert({ userId: user.id, ...result.data });
-    if (error) {
-      console.error("Error upserting profile data:", error);
-      return {
-        success: false,
-        message: "Database Error: Could not save profile.",
-      };
-    }
+    // const { error } = await supabase
+    //   .from("CandidateProfile")
+    //   .upsert({ userId: user.id, ...result.data });
+    // if (error) {
+    //   console.error("Error upserting profile data:", error);
+    //   return {
+    //     success: false,
+    //     message: "Database Error: Could not save profile.",
+    //   };
+    // }
     revalidatePath("/dashboard/profile");
     return { success: true, message: "Profile updated successfully!" };
   } catch (e) {
