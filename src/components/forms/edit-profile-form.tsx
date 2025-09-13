@@ -18,6 +18,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import type { CandidateProfile } from "@prisma/client";
 import type { User } from "@supabase/supabase-js";
+import { onSave } from "@/app/dashboard/profile/actions";
+import { useActionState } from "react";
 
 interface EditProfileFormProps {
   user: User;
@@ -27,33 +29,15 @@ export function EditProfileForm({
   user,
   profile: { firstName, lastName, email, githubUrl, bio, visaNeeded },
 }: EditProfileFormProps) {
-  const [formData, setFormData] = useState({
-    firstName: firstName,
-    lastName: lastName,
-    email: email, // Pre-filled disabled field
-    githubUrl: githubUrl,
-    bio: bio,
-    requiresVisaSponsorship: visaNeeded,
-  });
+  const initialState = {
+    success: false,
+    message: "",
+    errors: [],
+  };
+  const [state, formAction] = useActionState(onSave, initialState);
+  console.log(state);
   const [isEditing, setIsEditing] = useState(false);
   const [bioLength, setBioLength] = useState(0);
-
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    if (field === "bio" && typeof value === "string") {
-      setBioLength(value.length);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle form submission here
-    console.log("Form submitted:", formData);
-  };
 
   return (
     <>
@@ -69,21 +53,19 @@ export function EditProfileForm({
             </CardDescription>
           </CardHeader>
 
-          <form onSubmit={handleSubmit}>
+          <form action={formAction}>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-sm font-medium">
-                    First Name *
+                    First Name
                   </Label>
                   <Input
                     id="firstName"
+                    name="firstName"
                     type="text"
                     required
-                    value={formData.firstName}
-                    onChange={(e) =>
-                      handleInputChange("firstName", e.target.value)
-                    }
+                    defaultValue={firstName}
                     placeholder="Enter your first name"
                     className="w-full"
                   />
@@ -91,16 +73,14 @@ export function EditProfileForm({
 
                 <div className="space-y-2">
                   <Label htmlFor="lastName" className="text-sm font-medium">
-                    Last Name *
+                    Last Name
                   </Label>
                   <Input
                     id="lastName"
+                    name="lastName"
                     type="text"
                     required
-                    value={formData.lastName}
-                    onChange={(e) =>
-                      handleInputChange("lastName", e.target.value)
-                    }
+                    defaultValue={lastName}
                     placeholder="Enter your last name"
                     className="w-full"
                   />
@@ -113,9 +93,10 @@ export function EditProfileForm({
                 </Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   disabled
-                  value={formData.email}
+                  defaultValue={email}
                   className="w-full bg-muted text-muted-foreground cursor-not-allowed"
                 />
                 <p className="text-xs text-muted-foreground">
@@ -129,11 +110,9 @@ export function EditProfileForm({
                 </Label>
                 <Input
                   id="githubUrl"
+                  name="githubUrl"
                   type="url"
-                  value={formData.githubUrl ?? ""}
-                  onChange={(e) =>
-                    handleInputChange("githubUrl", e.target.value)
-                  }
+                  defaultValue={githubUrl ?? ""}
                   placeholder="https://github.com/yourusername"
                   className="w-full"
                 />
@@ -145,12 +124,8 @@ export function EditProfileForm({
                 </Label>
                 <Textarea
                   id="bio"
-                  value={formData.bio ?? ""}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 500) {
-                      handleInputChange("bio", e.target.value);
-                    }
-                  }}
+                  name="bio"
+                  defaultValue={bio ?? ""}
                   placeholder="Tell us about yourself, your experience, and what you're looking for..."
                   className="w-full min-h-[120px] resize-none"
                   maxLength={500}
@@ -175,13 +150,7 @@ export function EditProfileForm({
                 <Checkbox
                   id="visaSponsorship"
                   name="visaSponsorship"
-                  defaultChecked={formData.requiresVisaSponsorship ?? undefined}
-                  onCheckedChange={(checked) =>
-                    handleInputChange(
-                      "requiresVisaSponsorship",
-                      checked === true
-                    )
-                  }
+                  defaultChecked={visaNeeded ?? undefined}
                 />
                 <Label
                   htmlFor="visaSponsorship"
