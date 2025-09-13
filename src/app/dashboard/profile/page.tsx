@@ -1,35 +1,35 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useActionState } from "react";
-import { onSave } from "./actions";
-export default function DashboardProfile() {
-  const initState = {
-    success: false,
-    message: "",
-    errors: [],
-  };
-  const [state, formAction, isPending] = useActionState(onSave, initState);
-  return (
-    <form action={formAction}>
-      <div>
-        <Label htmlFor="fullName" className="text-sm font-medium">
-          Full Name:
-        </Label>
+import { createClient } from "@/utils/supabase/server";
+import { PrismaClient } from "@prisma/client";
 
-        <Input
-          id="fullName"
-          type="text"
-          name="fullName"
-          placeholder="Enter your fullname"
-          required
-        />
-      </div>
-      <Button type="submit">Save</Button>
-      {state?.message && (
-        <p className="text-sm text-red-500">{state.message}</p>
-      )}
-    </form>
+const prisma = new PrismaClient();
+
+export default async function DashboardProfile() {
+  // 1. Get the current user from Supabase
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // 2. If the user exists, fetch their profile from the database using Prisma
+  let profile = null;
+  if (user) {
+    profile = await prisma.candidateProfile.findUnique({
+      where: {
+        userId: user.id, // Use the user's ID to find the correct profile
+      },
+    });
+  }
+
+  // 3. Render the profile data, with a fallback if not found
+  if (!profile) {
+    return <div>Could not find user profile.</div>;
+  }
+
+  return (
+    <div>
+      <p>First Name: {profile.firstName}</p>
+      <p>Last Name: {profile.lastName}</p>
+      <p>Email: {profile.email}</p>
+    </div>
   );
 }
