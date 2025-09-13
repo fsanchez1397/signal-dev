@@ -1,7 +1,7 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import {prisma}
+import { prisma } from "@/utils/prisma/prisma";
 import z from "zod";
 const profileSchema = z.object({
   firstName: z
@@ -61,6 +61,12 @@ export const onSave = async (
     //     message: "Database Error: Could not save profile.",
     //   };
     // }
+    await prisma.candidateProfile.update({
+      where: {
+        userId: user.id,
+      },
+      data: result.data,
+    });
     revalidatePath("/dashboard/profile");
     return { success: true, message: "Profile updated successfully!" };
   } catch (e) {

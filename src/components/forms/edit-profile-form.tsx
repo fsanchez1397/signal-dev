@@ -16,15 +16,24 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import type { CandidateProfile } from "@prisma/client";
+import type { User } from "@supabase/supabase-js";
 
-export function EditProfileForm({ user, profile }) {
+interface EditProfileFormProps {
+  user: User;
+  profile: CandidateProfile;
+}
+export function EditProfileForm({
+  user,
+  profile: { firstName, lastName, email, githubUrl, bio, visaNeeded },
+}: EditProfileFormProps) {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "john.doe@example.com", // Pre-filled disabled field
-    githubUrl: "",
-    bio: "",
-    requiresVisaSponsorship: false,
+    firstName: firstName,
+    lastName: lastName,
+    email: email, // Pre-filled disabled field
+    githubUrl: githubUrl,
+    bio: bio,
+    requiresVisaSponsorship: visaNeeded,
   });
   const [isEditing, setIsEditing] = useState(false);
   const [bioLength, setBioLength] = useState(0);
@@ -121,7 +130,7 @@ export function EditProfileForm({ user, profile }) {
                 <Input
                   id="githubUrl"
                   type="url"
-                  value={formData.githubUrl}
+                  value={formData.githubUrl ?? ""}
                   onChange={(e) =>
                     handleInputChange("githubUrl", e.target.value)
                   }
@@ -136,7 +145,7 @@ export function EditProfileForm({ user, profile }) {
                 </Label>
                 <Textarea
                   id="bio"
-                  value={formData.bio}
+                  value={formData.bio ?? ""}
                   onChange={(e) => {
                     if (e.target.value.length <= 500) {
                       handleInputChange("bio", e.target.value);
@@ -165,7 +174,8 @@ export function EditProfileForm({ user, profile }) {
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="visaSponsorship"
-                  checked={formData.requiresVisaSponsorship}
+                  name="visaSponsorship"
+                  defaultChecked={formData.requiresVisaSponsorship ?? undefined}
                   onCheckedChange={(checked) =>
                     handleInputChange(
                       "requiresVisaSponsorship",

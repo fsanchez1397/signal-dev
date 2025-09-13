@@ -1,4 +1,4 @@
-import { EditProfileForm } from "@/components/ui/edit-profile-form";
+import { EditProfileForm } from "@/components/forms/edit-profile-form";
 import { createClient } from "@/utils/supabase/server";
 import { prisma } from "@/utils/prisma/prisma";
 import { redirect } from "next/navigation";
