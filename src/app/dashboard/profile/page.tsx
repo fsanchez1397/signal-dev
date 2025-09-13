@@ -27,6 +27,7 @@ export default async function DashboardProfile() {
 
   return (
     <div>
+      <p>This Works</p>
       <p>First Name: {profile.firstName}</p>
       <p>Last Name: {profile.lastName}</p>
       <p>Email: {profile.email}</p>
