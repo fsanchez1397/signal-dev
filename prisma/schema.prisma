@@ -9,7 +9,7 @@ datasource db {
 }
 model CandidateProfile {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String    @unique
+  userId    String    @unique @db.Uuid
   email     String    @unique
   firstName String    
   lastName  String    
@@ -30,7 +30,7 @@ model Interview {
   status       InterviewStatus   @default(COMPLETED)
   category     ChallengeCategory
   createdAt    DateTime          @default(now())
-  candidateId  String
+  candidateId  String            @db.Uuid
   candidate    CandidateProfile  @relation(fields: [candidateId], references: [id])
 }
 
