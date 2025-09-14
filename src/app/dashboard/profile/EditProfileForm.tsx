@@ -34,15 +34,13 @@ export function EditProfileForm({
     message: "",
     errors: [],
   };
-  const [state, formAction] = useActionState(onSave, initialState);
-  console.log(state);
+  const [state, formAction, isPending] = useActionState(onSave, initialState);
   const [isEditing, setIsEditing] = useState(false);
-  const [bioLength, setBioLength] = useState(0);
-
+  const [bioLength, setBioLength] = useState(bio?.length ?? 0);
   return (
     <>
       <Button onClick={() => setIsEditing(!isEditing)}>Edit Profile</Button>
-      {isEditing ? (
+      {isEditing && (
         <Card className="w-full">
           <CardHeader className="text-center space-y-2">
             <CardTitle className="text-2xl font-semibold">
@@ -128,6 +126,7 @@ export function EditProfileForm({
                   defaultValue={bio ?? ""}
                   placeholder="Tell us about yourself, your experience, and what you're looking for..."
                   className="w-full min-h-[120px] resize-none"
+                  onChange={(e) => setBioLength(e.target.value.length)}
                   maxLength={500}
                 />
                 <div className="flex justify-between items-center">
@@ -148,12 +147,12 @@ export function EditProfileForm({
 
               <div className="flex items-center space-x-2">
                 <Checkbox
-                  id="visaSponsorship"
-                  name="visaSponsorship"
+                  id="visaNeeded"
+                  name="visaNeeded"
                   defaultChecked={visaNeeded ?? undefined}
                 />
                 <Label
-                  htmlFor="visaSponsorship"
+                  htmlFor="visaNeeded"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
                   I require visa sponsorship
@@ -163,13 +162,11 @@ export function EditProfileForm({
 
             <CardFooter>
               <Button type="submit" className="w-full">
-                Save Changes
+                {isPending ? "Saving..." : "Save"}
               </Button>
             </CardFooter>
           </form>
         </Card>
-      ) : (
-        <></>
       )}
     </>
   );

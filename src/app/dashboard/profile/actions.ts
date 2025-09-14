@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/utils/prisma/prisma";
 import z from "zod";
-
+import type { ActionResult } from "@/lib/types";
 const profileSchema = z.object({
   firstName: z
     .string()
@@ -23,22 +23,13 @@ const profileSchema = z.object({
   visaNeeded: z.coerce.boolean(),
 });
 
-interface ActionResult {
-  success: boolean;
-  message?: string;
-  errors?: {
-    field?: string;
-    message: string;
-  }[];
-}
 export const onSave = async (
-  prevState: any,
+  prevState: ActionResult,
   formData: FormData
 ): Promise<ActionResult> => {
   try {
     const rawFormData = Object.fromEntries(formData.entries());
     const result = profileSchema.safeParse(rawFormData);
-    console.log(formData);
     if (!result.success) {
       return {
         success: false,
@@ -56,7 +47,10 @@ export const onSave = async (
     } = await supabase.auth.getUser();
 
     if (!user) {
-      throw new Error("User not authenticated");
+      return {
+        success: false,
+        message: "You must be logged in to update your profile.",
+      };
     }
 
     await prisma.candidateProfile.update({
