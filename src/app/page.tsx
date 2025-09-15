@@ -13,9 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { handleReportGeneration } from "./action";
 import type { SignalReport } from "@/lib/types";
-
+import type { ReportState } from "@/lib/types";
 // Define the initial state for our hook
-const initialState = {
+const initialState: ReportState = {
   report: null,
   error: null,
 };

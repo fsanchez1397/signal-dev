@@ -3,6 +3,8 @@
 import { z } from "zod";
 import type { SignalReport } from "@/lib/types";
 import type { PinnedItem } from "@/lib/types";
+import type { ReportState } from "@/lib/types";
+
 // Define a clear, type-safe interface for the final report.
 // This is the "product" our action will create.
 
@@ -14,11 +16,14 @@ const githubUsernameSchema = z
   });
 
 export async function handleReportGeneration(
-  username: string
-): Promise<SignalReport> {
+  prevState: ReportState,
+  formData: FormData
+): Promise<ReportState> {
+  const username = formData.get("github") as string;
+
   const validation = githubUsernameSchema.safeParse(username);
   if (!validation.success) {
-    return { success: false, error: "Invalid github username provided." };
+    return { report: null, error: "Invalid GitHub username provided." };
   }
 
   const token = process.env.GITHUB_TOKEN;

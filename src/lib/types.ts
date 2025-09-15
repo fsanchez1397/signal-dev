@@ -34,3 +34,7 @@ export interface PinnedItem {
     hasLicense: boolean;
   };
 }
+export interface ReportState {
+  report: SignalReport | null;
+  error: string | null;
+}
