@@ -62,10 +62,10 @@ export function EditProfileForm({
                     id="firstName"
                     name="firstName"
                     type="text"
-                    required
                     defaultValue={firstName}
                     placeholder="Enter your first name"
                     className="w-full"
+                    required
                   />
                 </div>
 
